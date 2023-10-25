@@ -1,25 +1,34 @@
 const cliProgress = require('cli-progress');
+const fs = require('node:fs');
 
-const progressBar = new cliProgress.SingleBar({
-    format: 'Progress [{bar}] {percentage}% | ETA: {eta}s | {value}/{total}',
-    barCompleteChar: '\u2588',
-    barIncompleteChar: '\u2591',
-    hideCursor: true,
-});
-const totalTasks = 100;
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+
+const filepath = './files/free_company_dataset.csv'
+
+function readFileWithProgressBar(filepath) {
+    const fileSize = fs.statSync(filepath).size;
+    const readStream = fs.createReadStream(filepath);
+    let readed = 0;
+
+    const progressBar = new cliProgress.SingleBar({
+        format: 'Progress [{bar}] {percentage}% | ETA: {eta}s | {value}/{total}',
+        barCompleteChar: '\u2588',
+        barIncompleteChar: '\u2591',
+        hideCursor: true,
+    });
+    progressBar.start(fileSize, 0);
+    readStream.on('data', chunk => {
+        readed += chunk.length;
+        progressBar.update(readed);
+    });
+    readStream.on('end', () => {
+       progressBar.stop();
+       console.log('Done!')
+    });
+    readStream.on('error', error => {
+        progressBar.stop();
+        console.error('Failed: ', error);
+    });
 }
 
-async function processTasks() {
-    progressBar.start(totalTasks, 0);
-    for(let i =0; i<=totalTasks; i++){
-        progressBar.update(i++);
-        await sleep(1000)
-    }
-    progressBar.stop();
-    console.log('Done!')
-}
-
-processTasks();
+readFileWithProgressBar(filepath);
