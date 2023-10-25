@@ -1,5 +1,30 @@
 {
+  "name": "cli-progress-bar",
+  "version": "1.0.0",
+  "scripts": {
+    "format": "prettier --write ./index.js && eslint --fix ./index.js",
+    "lint": "prettier --check . && eslint ./*.js"
+  },
   "dependencies": {
-    "cli-progress": "^3.12.0"
-  }
+    "cli-progress": "^3.12.0",
+    "prettier": "^3.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.52.0",
+    "eslint-plugin-node": "^11.1.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.0.2"
+  },
+  "lint-staged": {
+    "*.js": ["npm run format", "npm run lint", "git add"]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "description": "It shows us progress bar in terminal, while reading file.",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC"
 }
